@@ -39,7 +39,8 @@
       err_pick_city: 'Pick a city from the list', err_generic: 'Something went wrong',
       loads_none: 'Nothing found. Try a wider radius or fewer filters.', negotiable: 'Negotiable',
       age_now: 'just now', age_min: '{n} min ago', age_hour: '{n}h ago', age_day: '{n}d ago',
-      btn_call: 'Call', btn_message: 'Message', not_signed_in: "Opening your account...",
+      btn_call: 'Call', btn_message: 'Message',
+      not_signed_in: "Couldn't sign you in. Please close this and reopen the Mini App from @sngonebot.",
     },
     ru: {
       nav_dashboard: 'Главная', nav_search: 'Поиск', nav_post: 'Разместить', nav_nearby: 'Рядом', nav_profile: 'Профиль',
@@ -77,7 +78,8 @@
       err_pick_city: 'Выберите город из списка', err_generic: 'Что-то пошло не так',
       loads_none: 'Ничего не найдено. Увеличьте радиус или уменьшите фильтры.', negotiable: 'Договорная',
       age_now: 'только что', age_min: '{n} мин назад', age_hour: '{n} ч назад', age_day: '{n} дн назад',
-      btn_call: 'Позвонить', btn_message: 'Написать', not_signed_in: 'Открываем ваш аккаунт...',
+      btn_call: 'Позвонить', btn_message: 'Написать',
+      not_signed_in: 'Не удалось войти. Закройте и снова откройте Mini App из @sngonebot.',
     },
     uz: {
       nav_dashboard: 'Bosh sahifa', nav_search: 'Qidiruv', nav_post: 'Joylash', nav_nearby: 'Yaqin atrofda', nav_profile: 'Profil',
@@ -115,7 +117,8 @@
       err_pick_city: "Ro'yxatdan shahar tanlang", err_generic: 'Xatolik yuz berdi',
       loads_none: "Hech narsa topilmadi. Radiusni oshiring yoki filtrlarni kamaytiring.", negotiable: 'Kelishiladi',
       age_now: 'hozir', age_min: '{n} daq oldin', age_hour: '{n} soat oldin', age_day: '{n} kun oldin',
-      btn_call: "Qo'ng'iroq", btn_message: 'Yozish', not_signed_in: 'Hisobingiz ochilmoqda...',
+      btn_call: "Qo'ng'iroq", btn_message: 'Yozish',
+      not_signed_in: "Kirish amalga oshmadi. Ilovani yoping va @sngonebot orqali qayta oching.",
     },
   };
 
