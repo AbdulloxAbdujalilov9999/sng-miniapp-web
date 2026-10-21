@@ -10,10 +10,16 @@ the main platform (`sng-loadboard`, on Hetzner), so its design and deploys never
   plumbing, no UI coupling). `session-shim.js` is a small stand-in for the main site's own Session
   module, which this page doesn't need (no Google/email sign-in here).
 - **No build step**: plain static files, deployed as-is.
+- **Design**: visual language (colors, typography, card/badge/button styles) adapted from the
+  `loadme-clone` project's exact tokens (`src/app/globals.css`) and component patterns
+  (`LoadCard.tsx`, `AppShell.tsx`), reflowed from that project's desktop sidebar layout into this
+  one's mobile-first bottom-tab layout. Icons are Lucide path data (`icons.js`, ISC-licensed),
+  vendored inline rather than loaded from a CDN, since this app depends on nothing but Telegram and
+  the API at runtime.
 
 ## Keeping this in sync
 
 `util.js`, `api.js`, and `telegram-miniapp.js` are copies of the same files in
 `sng-loadboard/web/js/` - if the API's request/response shapes change there, re-copy them here too.
-Everything else (`app.js`, `app.css`, `i18n.js`, `session-shim.js`, `index.html`) is specific to this
-Mini App and lives only here.
+Everything else (`app.js`, `app.css`, `icons.js`, `i18n.js`, `session-shim.js`, `index.html`) is
+specific to this Mini App and lives only here.

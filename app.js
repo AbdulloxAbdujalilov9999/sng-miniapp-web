@@ -19,6 +19,8 @@
   function setTheme(mode) {
     document.documentElement.setAttribute('data-theme', mode);
     U.store.set('sng.miniTheme', mode);
+    const sunMoon = $('row-theme');
+    if (sunMoon) { sunMoon.dataset.icon = mode === 'dark' ? 'moon' : 'sun'; renderIcons(); }
   }
 
   function toast(msg) {
@@ -27,6 +29,13 @@
     el.textContent = msg;
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 2600);
+  }
+
+  /** Fills every [data-icon] placeholder with its inline Lucide-style SVG (see icons.js). */
+  function renderIcons() {
+    document.querySelectorAll('[data-icon]').forEach((el) => {
+      el.innerHTML = window.Icon(el.dataset.icon, { size: Number(el.dataset.iconSize) || 18 });
+    });
   }
 
   // ---------------------------------------------------------------- age/money helpers
@@ -40,6 +49,9 @@
   const money = (usd) => (usd > 0 ? `$${Number(usd).toLocaleString()}` : t('negotiable'));
 
   // ---------------------------------------------------------------- shared listing card (loads + trucks)
+  // Visual language adapted from LoadMe's LoadCard.tsx: route icons + divider, badge row, a divider
+  // before the bottom row, company/price/age, contact icon-buttons - reflowed to a single mobile
+  // column instead of LoadMe's four-across desktop layout.
   function cardHtml(item, kind) {
     const isLoad = kind === 'loads';
     const from = isLoad ? item.originCity : item.locCity;
@@ -49,21 +61,27 @@
     const tel = String(item.contactPhone || '').replace(/[^\d+]/g, '');
     const tg = item.contactTelegram ? `https://t.me/${item.contactTelegram.replace('@', '')}` : null;
     return `<div class="lcard" data-id="${item.id}" data-kind="${kind}">
-      <div class="top">
-        <div class="route">${esc(from)} <span style="color:var(--muted)">→</span> ${esc(to)}</div>
-        <div class="age">${esc(ageText(item.createdAt))}</div>
+      <div class="route-row">
+        <div class="route-icons">${window.Icon('package', { size: 12 })}<span class="ln"></span>${window.Icon('map-pin', { size: 12 })}</div>
+        <div class="route-text">
+          <div class="city">${esc(from)}</div>
+          <div class="city to">${esc(to)}</div>
+        </div>
       </div>
-      <div class="meta">
-        <span class="badge">${esc(item.equip)}</span>
-        <span><b>${esc(weightLabel)}</b></span>
-        ${isLoad && item.fp ? `<span>${esc(item.fp)}</span>` : ''}
-        ${item.company ? `<span>${esc(item.company)}</span>` : ''}
+      <div class="badges">
+        <span class="badge equip">${esc(EQUIP_NAME[item.equip] || item.equip)}</span>
+        <span class="badge full">${esc(weightLabel)}</span>
+        ${isLoad && item.fp ? `<span class="badge full">${esc(item.fp)}</span>` : ''}
       </div>
-      <div class="bottom">
-        <span class="price">${esc(price)}</span>
+      <div class="bottom-row">
+        <div class="company">${esc(item.company || '')}</div>
         <div class="acts">
-          ${tg ? `<a class="actbtn tg" href="${tg}" target="_blank" rel="noopener" aria-label="${esc(t('btn_message'))}"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" fill="none" stroke="currentColor" stroke-width="2"/></svg></a>` : ''}
-          ${tel ? `<a class="actbtn phone" href="tel:${esc(tel)}" aria-label="${esc(t('btn_call'))}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 2 .6 3a2 2 0 01-.5 2.1L8 10a16 16 0 006 6l1.2-1.2a2 2 0 012.1-.5c1 .3 2 .5 3 .6a2 2 0 011.7 2z"/></svg></a>` : ''}
+          ${tg ? `<a class="actbtn tg" href="${tg}" target="_blank" rel="noopener" aria-label="${esc(t('btn_message'))}">${window.Icon('send', { size: 14 })}</a>` : ''}
+          ${tel ? `<a class="actbtn phone" href="tel:${esc(tel)}" aria-label="${esc(t('btn_call'))}">${window.Icon('phone', { size: 14 })}</a>` : ''}
+        </div>
+        <div class="price-age">
+          <div class="price">${esc(price)}</div>
+          <div class="age">${esc(ageText(item.createdAt))}</div>
         </div>
       </div>
       ${item.notes ? `<div class="note">${esc(item.notes)}</div>` : ''}
@@ -238,8 +256,8 @@
 
   // ---------------------------------------------------------------- Post modal
   let postKind = 'cargo'; // which endpoint "As text" posts to - persists across tab switches
-  function openPost() { $('postmodal').classList.add('open'); }
-  function closePost() { $('postmodal').classList.remove('open'); }
+  function openPost() { $('postmodal').classList.add('open'); $('postmodal-backdrop').classList.add('open'); }
+  function closePost() { $('postmodal').classList.remove('open'); $('postmodal-backdrop').classList.remove('open'); }
   function setPostTab(tab) {
     document.querySelectorAll('.toggle3 .seg').forEach((b) => b.classList.toggle('on', b.dataset.postTab === tab));
     $('post-text').classList.toggle('hidden', tab !== 'text');
@@ -378,10 +396,12 @@
   }
   function wireProfile() {
     $('lang-select').addEventListener('change', (e) => { MiniI18n.setLang(e.target.value); applyI18n(); loadProfile(); });
-    $('row-theme').addEventListener('click', () => {
+    const toggleTheme = () => {
       const cur = document.documentElement.getAttribute('data-theme') || 'light';
       setTheme(cur === 'dark' ? 'light' : 'dark');
-    });
+    };
+    $('row-theme').addEventListener('click', toggleTheme);
+    $('row-theme-row').addEventListener('click', toggleTheme);
     $('btn-logout').addEventListener('click', () => {
       window.Session.clear();
       telegram?.close?.();
@@ -390,6 +410,7 @@
 
   // ---------------------------------------------------------------- boot
   async function boot() {
+    renderIcons();
     setTheme(U.store.get('sng.miniTheme') || (telegram?.colorScheme === 'dark' ? 'dark' : 'light'));
     applyI18n();
     wireNav(); wireDashboard(); wireSearch(); wireNearby(); wirePost(); wireProfile();
