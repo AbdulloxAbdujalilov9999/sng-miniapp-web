@@ -282,7 +282,7 @@
 
   async function submitTextPost() {
     const text = $('post-text-input').value.trim();
-    if (text.length < 8) return toast(t('err_generic'));
+    if (text.length < 8) return toast(t('err_text_short'));
     $('post-text-send').disabled = true;
     try {
       const res = await API.post(postKind === 'truck' ? '/api/ai/parse-trucks' : '/api/ai/parse-loads', { text });
